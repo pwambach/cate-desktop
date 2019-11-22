@@ -1,4 +1,3 @@
-import * as electron from 'electron';
 import * as log from 'electron-log';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -6,6 +5,7 @@ import * as semver from 'semver';
 import { pep440ToSemver } from '../common/version';
 import { SETUP_REASON_INSTALL_CATE, SETUP_REASON_UPDATE_CATE, SetupInfo } from '../common/setup';
 import * as assert from '../common/assert';
+import {ElectronApp} from '../main_renderer/ElectronApp'
 
 
 /**
@@ -61,6 +61,7 @@ const DEFAULT_SERVICE_ADDRESS = 'localhost';
 
 
 let _cateDir = null;
+let _genApp : GenericApp = new ElectronApp();
 
 export function getAppIconPath() {
     let iconFile = 'cate-icon.png';
@@ -69,11 +70,11 @@ export function getAppIconPath() {
     } else if (process.platform === 'win32') {
         iconFile = 'win32/cate-icon.ico';
     }
-    return path.join(electron.app.getAppPath(), 'resources', iconFile);
+    return path.join(_genApp.getAppPath(), 'resources', iconFile);
 }
 
 export function getAppDataDir() {
-    return path.join(electron.app.getPath('home'), '.cate');
+    return path.join(_genApp.getPath('home'), '.cate');
 }
 
 export function isWebAPIVersionCompatible(version: string, pep440?: boolean) {
@@ -120,7 +121,7 @@ export function setCateDir(cateDir: string) {
 
 export function getCateWebAPISetupInfo(): SetupInfo {
     const newCateVersion = EXPECTED_CATE_WEBAPI_VERSION; // PEP440
-    const newCateDir = path.join(electron.app.getPath('home'), 'cate-' + newCateVersion);
+    const newCateDir = path.join(_genApp.getPath('home'), 'cate-' + newCateVersion);
     const dataDir = getAppDataDir();
     if (fs.existsSync(dataDir)) {
         const expectedVersion = pep440ToSemver(newCateVersion); // SemVer
@@ -145,7 +146,7 @@ export function getCateWebAPISetupInfo(): SetupInfo {
                     log.info(`Cate WebAPI executable found: ${cateWebapiExe}`);
                     const updateInfo = {oldCateDir, newCateDir, oldCateVersion, newCateVersion, setupReason: null};
                     // Return immediately if the versions are equal.
-                    if (semver.eq(version, electron.app.getVersion(), true)) {
+                    if (semver.eq(version, _genApp.getVersion(), true)) {
                         return updateInfo;
                     }
                     updateInfos[version] = updateInfo;

@@ -1,4 +1,4 @@
-import * as electron from 'electron';
+import {ElectronApp} from '../main_renderer/ElectronApp'
 import {actions} from './actions';
 
 const OS_IS_DARWIN = process.platform === 'darwin';
@@ -50,6 +50,8 @@ const editSubMenu = [];
 //         }
 //     );
 // }
+
+let _genApp : GenericApp = new ElectronApp();
 
 let viewSubMenu = [
     actions.toggleFullScreen,
@@ -149,7 +151,7 @@ if (OS_IS_DARWIN) {
     ];
 
     const appMenu = ({
-        label: electron.app.getName(),
+        label: _genApp.getName(),
         submenu: appSubMenu
     });
 

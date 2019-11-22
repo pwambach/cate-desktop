@@ -35,35 +35,43 @@ export function main() {
     const middleware = applyMiddleware(...middlewares);
     const store = createStore(stateReducer, middleware) as Store<State>;
 
+    // @todo replace tb 2019-11-22
     ipcRenderer.on('apply-initial-state', (event, initialState) => {
         store.dispatch(actions.updateInitialState(initialState));
         connectWebAPIClient(store);
     });
 
+    // @todo replace tb 2019-11-22
     ipcRenderer.on('new-workspace', () => {
         store.dispatch(actions.newWorkspaceInteractive());
     });
 
+    // @todo replace tb 2019-11-22
     ipcRenderer.on('open-workspace', () => {
         store.dispatch(actions.openWorkspaceInteractive());
     });
 
+    // @todo replace tb 2019-11-22
     ipcRenderer.on('close-workspace', () => {
         store.dispatch(actions.closeWorkspaceInteractive());
     });
 
+    // @todo replace tb 2019-11-22
     ipcRenderer.on('save-workspace', () => {
         store.dispatch(actions.saveWorkspaceInteractive());
     });
 
+    // @todo replace tb 2019-11-22
     ipcRenderer.on('save-workspace-as', () => {
         store.dispatch(actions.saveWorkspaceAsInteractive());
     });
 
+    // @todo replace tb 2019-11-22
     ipcRenderer.on('show-preferences-dialog', () => {
         store.dispatch(actions.showPreferencesDialog());
     });
 
+    // @todo replace tb 2019-11-22
     ipcRenderer.on('get-preferences', () => {
         store.dispatch(actions.sendPreferencesToMain());
     });
