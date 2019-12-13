@@ -11,6 +11,8 @@ const fileSubMenu: Array<any> = [
     actions.openWorkspace,
     actions.closeWorkspace,
     ________________,
+    actions.deleteWorkspace,
+    ________________,
     actions.saveWorkspace,
     actions.saveWorkspaceAs,
 ];

@@ -97,7 +97,8 @@ export default class ApplicationPage extends React.PureComponent<null, null> {
                 <PreferencesDialog/>
                 <NewWorkspaceDialog/>
                 <SaveWorkspaceAsDialog/>
-                <ChooseWorkspaceDialog dialogId={"openWorkspaceDialog"}/>
+                <ChooseWorkspaceDialog dialogId={'openWorkspaceDialog'}/>
+                <ChooseWorkspaceDialog dialogId={'deleteWorkspaceDialog'}/>
                 <OperationStepDialog id={NEW_CTX_OPERATION_STEP_DIALOG_ID}/>
                 <JobFailureDialog/>
             </div>

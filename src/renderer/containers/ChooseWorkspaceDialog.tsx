@@ -17,6 +17,7 @@ interface IChooseWorkspaceDialogOwnProps {
 
 interface IChooseWorkspaceDialogProps extends IChooseWorkspaceDialogState, IChooseWorkspaceDialogOwnProps {
     isOpen: boolean;
+    isDelete: boolean;
     isLocalWebAPI: boolean;
     workspaceNames: string[];
 }
@@ -25,6 +26,7 @@ function mapStateToProps(state: State, ownProps: IChooseWorkspaceDialogOwnProps)
     const dialogState = selectors.dialogStateSelector(ownProps.dialogId)(state) as any;
     const isOpen = dialogState.isOpen;
     const dialogId = ownProps.dialogId;
+    const isDelete = dialogId.startsWith("delete");
     const isLocalWebAPI = selectors.isLocalWebAPISelector(state);
     let workspaceDir = dialogState.workspaceDir;
     let workspaceName = dialogState.workspaceName;
@@ -37,15 +39,25 @@ function mapStateToProps(state: State, ownProps: IChooseWorkspaceDialogOwnProps)
     }
     workspaceDir = isLocalWebAPI ? workspaceDir || '' : null;
     workspaceName = workspaceName || '';
+    let workspaceNames: string[];
+    if (state.data.workspace && state.data.workspaceNames) {
+        let workspaceBaseDir = state.data.workspace.baseDir;
+        let lastIndexOf = workspaceBaseDir.lastIndexOf('\\');
+        let name = workspaceBaseDir.substr(lastIndexOf + 1);
+        workspaceNames = [...state.data.workspaceNames];
+        let indexOf = workspaceNames.indexOf(name);
+        if (indexOf > -1) {
+            workspaceNames.splice(indexOf, 1);
+        }
+    }
     return {
         workspaceDir,
         workspaceName,
         dialogId,
         isOpen,
+        isDelete,
         isLocalWebAPI,
-        // TODO (SabineEmbacher) convert into selector
-        // the selector should return a list of workspace names without the current workspace.
-        workspaceNames: state.data.workspaceNames || []
+        workspaceNames: workspaceNames
     };
 }
 
@@ -88,7 +100,11 @@ class ChooseWorkspaceDialog extends React.Component<IChooseWorkspaceDialogProps 
 
     private onConfirm() {
         this.props.dispatch(actions.hideDialog(this.props.dialogId, this.state));
-        this.props.dispatch(actions.openWorkspace(this.composeWorkspacePath()));
+        if (this.props.isDelete) {
+            this.props.dispatch(actions.deleteWorkspace(this.composeWorkspacePath()));
+        } else {
+            this.props.dispatch(actions.openWorkspace(this.composeWorkspacePath()));
+        }
     }
 
     private setSelectedWorkspace(workspaceName: string) {
@@ -109,11 +125,21 @@ class ChooseWorkspaceDialog extends React.Component<IChooseWorkspaceDialogProps 
             return null;
         }
 
+
+        let title: string;
+        let confirmTitle: string;
+        if (this.props.isDelete) {
+            title = 'Delete Workspace';
+            confirmTitle = 'Delete';
+        } else {
+            title = 'Open Workspace';
+            confirmTitle = 'Open';
+        }
         return (
             <ModalDialog
                 isOpen={isOpen}
-                title={'Open Workspace'}
-                confirmTitle={'Open'}
+                title={title}
+                confirmTitle={confirmTitle}
                 onCancel={this.onCancel}
                 canConfirm={this.canConfirm}
                 onConfirm={this.onConfirm}
