@@ -41,6 +41,7 @@ import {
     isInputAssigned
 } from './containers/editor/value-editor-assign';
 import { ERROR_CODE_CANCELLED } from './webapi';
+import {DELETE_WORKSPACE_DIALOG_ID, OPEN_WORKSPACE_DIALOG_ID} from './containers/ChooseWorkspaceDialog';
 
 
 /**
@@ -1001,17 +1002,17 @@ function openRemoteWorkspace(dispatch: (action: (Action | ThunkAction)) => void,
     let jobPromise = selectors.workspaceAPISelector(getState()).listWorkspaces();
     jobPromise.then(workspaceNames => {
         dispatch(updateWorkspaceNames(workspaceNames));
-        dispatch(showDialog('openWorkspaceDialog'));
+        dispatch(showDialog(OPEN_WORKSPACE_DIALOG_ID));
     })
 }
 
 function deleteRemoteWorkspace(dispatch: (action: (Action | ThunkAction)) => void,
-                             getState: () => State) {
+                               getState: () => State) {
     let state = getState();
     let jobPromise = selectors.workspaceAPISelector(getState()).listWorkspaces();
     jobPromise.then(workspaceNames => {
         dispatch(updateWorkspaceNames(workspaceNames));
-        dispatch(showDialog('deleteWorkspaceDialog'));
+        dispatch(showDialog(DELETE_WORKSPACE_DIALOG_ID));
     })
 }
 

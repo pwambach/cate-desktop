@@ -28,7 +28,7 @@ import OperationStepDialog from "./OperationStepDialog";
 import {NEW_CTX_OPERATION_STEP_DIALOG_ID} from "./operation-step-dialog-ids";
 import AnimationView from "./AnimationView";
 import JobFailureDialog from "./JobFailureDialog";
-import ChooseWorkspaceDialog from './ChooseWorkspaceDialog';
+import ChooseWorkspaceDialog, {DELETE_WORKSPACE_DIALOG_ID, OPEN_WORKSPACE_DIALOG_ID} from './ChooseWorkspaceDialog';
 
 
 function renderWorldView(view: ViewState<WorldViewDataState>) {
@@ -97,8 +97,8 @@ export default class ApplicationPage extends React.PureComponent<null, null> {
                 <PreferencesDialog/>
                 <NewWorkspaceDialog/>
                 <SaveWorkspaceAsDialog/>
-                <ChooseWorkspaceDialog dialogId={'openWorkspaceDialog'}/>
-                <ChooseWorkspaceDialog dialogId={'deleteWorkspaceDialog'}/>
+                <ChooseWorkspaceDialog dialogId={OPEN_WORKSPACE_DIALOG_ID}/>
+                <ChooseWorkspaceDialog dialogId={DELETE_WORKSPACE_DIALOG_ID}/>
                 <OperationStepDialog id={NEW_CTX_OPERATION_STEP_DIALOG_ID}/>
                 <JobFailureDialog/>
             </div>

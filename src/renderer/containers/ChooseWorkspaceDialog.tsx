@@ -17,16 +17,17 @@ interface IChooseWorkspaceDialogOwnProps {
 
 interface IChooseWorkspaceDialogProps extends IChooseWorkspaceDialogState, IChooseWorkspaceDialogOwnProps {
     isOpen: boolean;
-    isDelete: boolean;
     isLocalWebAPI: boolean;
     workspaceNames: string[];
 }
+
+export const OPEN_WORKSPACE_DIALOG_ID = 'openWorkspaceDialog';
+export const DELETE_WORKSPACE_DIALOG_ID = 'deleteWorkspaceDialog';
 
 function mapStateToProps(state: State, ownProps: IChooseWorkspaceDialogOwnProps): IChooseWorkspaceDialogProps {
     const dialogState = selectors.dialogStateSelector(ownProps.dialogId)(state) as any;
     const isOpen = dialogState.isOpen;
     const dialogId = ownProps.dialogId;
-    const isDelete = dialogId.startsWith("delete");
     const isLocalWebAPI = selectors.isLocalWebAPISelector(state);
     let workspaceDir = dialogState.workspaceDir;
     let workspaceName = dialogState.workspaceName;
@@ -55,7 +56,6 @@ function mapStateToProps(state: State, ownProps: IChooseWorkspaceDialogOwnProps)
         workspaceName,
         dialogId,
         isOpen,
-        isDelete,
         isLocalWebAPI,
         workspaceNames: workspaceNames
     };
@@ -100,7 +100,7 @@ class ChooseWorkspaceDialog extends React.Component<IChooseWorkspaceDialogProps 
 
     private onConfirm() {
         this.props.dispatch(actions.hideDialog(this.props.dialogId, this.state));
-        if (this.props.isDelete) {
+        if (this.props.dialogId === DELETE_WORKSPACE_DIALOG_ID) {
             this.props.dispatch(actions.deleteWorkspace(this.composeWorkspacePath()));
         } else {
             this.props.dispatch(actions.openWorkspace(this.composeWorkspacePath()));
@@ -128,7 +128,7 @@ class ChooseWorkspaceDialog extends React.Component<IChooseWorkspaceDialogProps 
 
         let title: string;
         let confirmTitle: string;
-        if (this.props.isDelete) {
+        if (this.props.dialogId === DELETE_WORKSPACE_DIALOG_ID) {
             title = 'Delete Workspace';
             confirmTitle = 'Delete';
         } else {
