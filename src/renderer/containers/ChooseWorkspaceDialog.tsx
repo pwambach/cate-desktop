@@ -5,10 +5,12 @@ import {connect, DispatchProp} from 'react-redux';
 import * as actions from '../actions';
 import * as selectors from '../selectors';
 import {ListBox, ListBoxSelectionMode} from '../components/ListBox';
+import {Checkbox} from '@blueprintjs/core';
 
 interface IChooseWorkspaceDialogState extends DialogState {
     workspaceDir: string | null;
     workspaceName: string;
+    deleteEntireWorkspace: boolean;
 }
 
 interface IChooseWorkspaceDialogOwnProps {
@@ -57,7 +59,8 @@ function mapStateToProps(state: State, ownProps: IChooseWorkspaceDialogOwnProps)
         dialogId,
         isOpen,
         isLocalWebAPI,
-        workspaceNames: workspaceNames
+        workspaceNames: workspaceNames,
+        deleteEntireWorkspace: this.deleteEntireWorkspace
     };
 }
 
@@ -65,7 +68,7 @@ class ChooseWorkspaceDialog extends React.Component<IChooseWorkspaceDialogProps 
 
     constructor(props: IChooseWorkspaceDialogProps & DispatchProp<State>) {
         super(props);
-        this.state = {workspaceDir: '', workspaceName: ''};
+        this.state = {workspaceDir: '', workspaceName: '', deleteEntireWorkspace: true};
         this.onCancel = this.onCancel.bind(this);
         this.onConfirm = this.onConfirm.bind(this);
         this.canConfirm = this.canConfirm.bind(this);
@@ -101,7 +104,7 @@ class ChooseWorkspaceDialog extends React.Component<IChooseWorkspaceDialogProps 
     private onConfirm() {
         this.props.dispatch(actions.hideDialog(this.props.dialogId, this.state));
         if (this.props.dialogId === DELETE_WORKSPACE_DIALOG_ID) {
-            this.props.dispatch(actions.deleteWorkspace(this.composeWorkspacePath()));
+            this.props.dispatch(actions.deleteWorkspace(this.composeWorkspacePath(), this.state.deleteEntireWorkspace));
         } else {
             this.props.dispatch(actions.openWorkspace(this.composeWorkspacePath()));
         }
@@ -109,6 +112,10 @@ class ChooseWorkspaceDialog extends React.Component<IChooseWorkspaceDialogProps 
 
     private setSelectedWorkspace(workspaceName: string) {
         this.setState({workspaceName});
+    }
+
+    private handleCheckboxChange(event) {
+        this.setState({deleteEntireWorkspace: event.target.checked});
     }
 
     private onWorkspaceDirChange(ev: any) {
@@ -160,6 +167,23 @@ class ChooseWorkspaceDialog extends React.Component<IChooseWorkspaceDialogProps 
             );
         }
 
+        let checkbox: any;
+        if (this.props.dialogId === DELETE_WORKSPACE_DIALOG_ID) {
+            checkbox =
+                // <div>
+                //     <label>
+                <Checkbox label={'Delete entire workspace'}
+                          checked={this.state.deleteEntireWorkspace}
+                          onChange={this.handleCheckboxChange.bind(this)}
+                />
+            // Delete entire workspace
+            // </label>
+            // </div>
+        } else {
+            checkbox = ''
+        }
+
+
         return (
             <div>
                 <p style={{marginTop: '1em'}}>Saved workspaces:</p>
@@ -169,6 +193,7 @@ class ChooseWorkspaceDialog extends React.Component<IChooseWorkspaceDialogProps 
                          onSelection={newSelection => this.setSelectedWorkspace('' + newSelection[0])}
                          selection={this.state.workspaceName}
                 />
+                {checkbox}
             </div>
         );
     }

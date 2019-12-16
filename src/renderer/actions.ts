@@ -972,11 +972,11 @@ export function deleteResource(resName: string): ThunkAction {
  *
  * @returns a Redux thunk action
  */
-export function deleteWorkspace(workspaceName: string): ThunkAction {
+export function deleteWorkspace(workspaceName: string, deleteEntireWorkspace= true): ThunkAction {
     return (dispatch: Dispatch, getState: GetState) => {
 
         function call() {
-            return selectors.workspaceAPISelector(getState()).deleteWorkspace(workspaceName);
+            return selectors.workspaceAPISelector(getState()).deleteWorkspace(workspaceName, deleteEntireWorkspace);
         }
 
         callAPI({
