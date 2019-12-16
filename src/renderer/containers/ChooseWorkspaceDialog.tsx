@@ -46,6 +46,9 @@ function mapStateToProps(state: State, ownProps: IChooseWorkspaceDialogOwnProps)
     if (state.data.workspace && state.data.workspaceNames) {
         let workspaceBaseDir = state.data.workspace.baseDir;
         let lastIndexOf = workspaceBaseDir.lastIndexOf('\\');
+        if (lastIndexOf < 0) {
+            lastIndexOf = workspaceBaseDir.lastIndexOf('/');
+        }
         let name = workspaceBaseDir.substr(lastIndexOf + 1);
         workspaceNames = [...state.data.workspaceNames];
         let indexOf = workspaceNames.indexOf(name);
