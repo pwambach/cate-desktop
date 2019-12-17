@@ -1139,7 +1139,7 @@ export function openWorkspaceInteractive(): ThunkAction {
 export function deleteWorkspaceInteractive(): ThunkAction {
 
     return (dispatch: Dispatch, getState: GetState) => {
-        if (selectors.isLocalWebAPISelector(getState())) {
+        if (!selectors.isLocalWebAPISelector(getState())) {
         } else {
             deleteRemoteWorkspace(dispatch, getState);
         }
