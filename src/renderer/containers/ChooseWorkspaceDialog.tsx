@@ -5,7 +5,7 @@ import {connect, DispatchProp} from 'react-redux';
 import * as actions from '../actions';
 import * as selectors from '../selectors';
 import { ListBox, ListBoxSelectionMode } from '../components/ListBox';
-import {Checkbox} from '@blueprintjs/core';
+import { Checkbox } from '@blueprintjs/core';
 
 interface IChooseWorkspaceDialogState extends DialogState {
     workspaceDir: string | null;
