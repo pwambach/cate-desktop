@@ -29,7 +29,7 @@ import { ViewManager, ViewRenderMap } from "../components/ViewManager";
 import { ViewLayoutState, ViewState, ViewPath, SplitDir } from "../components/ViewState";
 import { CSSProperties } from "react";
 import OperationStepDialog from "./OperationStepDialog";
-import ChooseWorkspaceDialog, {DELETE_WORKSPACE_DIALOG_ID, OPEN_WORKSPACE_DIALOG_ID} from './ChooseWorkspaceDialog';
+import ChooseWorkspaceDialog, { DELETE_WORKSPACE_DIALOG_ID, OPEN_WORKSPACE_DIALOG_ID } from './ChooseWorkspaceDialog';
 
 
 function renderWorldView(view: ViewState<WorldViewDataState>) {
@@ -425,6 +425,5 @@ class _CenterPanel extends React.PureComponent<IViewManagerPanelProps & IDispatc
 }
 
 const CenterPanel = connect(mapStateToPropsView)(_CenterPanel);
-
 
 
