@@ -41,7 +41,7 @@ import {
     isInputAssigned
 } from './containers/editor/value-editor-assign';
 import { ERROR_CODE_CANCELLED } from './webapi';
-import {DELETE_WORKSPACE_DIALOG_ID, OPEN_WORKSPACE_DIALOG_ID} from './containers/ChooseWorkspaceDialog';
+import { DELETE_WORKSPACE_DIALOG_ID, OPEN_WORKSPACE_DIALOG_ID } from './containers/ChooseWorkspaceDialog';
 
 
 /**
@@ -2146,4 +2146,3 @@ export function sendPreferencesToMain(callback?: (error: any) => void): ThunkAct
         }
     };
 }
-
