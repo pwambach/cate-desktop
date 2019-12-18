@@ -1063,7 +1063,6 @@ export function newWorkspaceInteractive() {
 
 function openRemoteWorkspace(dispatch: (action: (Action | ThunkAction)) => void,
                              getState: () => State) {
-    let state = getState();
     let jobPromise = selectors.workspaceAPISelector(getState()).listWorkspaces();
     jobPromise.then(workspaceNames => {
         dispatch(updateWorkspaceNames(workspaceNames));

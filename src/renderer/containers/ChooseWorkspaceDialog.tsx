@@ -9,7 +9,8 @@ import { Checkbox } from '@blueprintjs/core';
 
 interface IChooseWorkspaceDialogState extends DialogState {
     workspaceDir: string | null;
-    workspaceName: string;
+    currentWorkspaceName: string;
+    selectedWorkspaceName: string;
     deleteEntireWorkspace: boolean;
 }
 
@@ -32,33 +33,29 @@ function mapStateToProps(state: State, ownProps: IChooseWorkspaceDialogOwnProps)
     const dialogId = ownProps.dialogId;
     const isLocalWebAPI = selectors.isLocalWebAPISelector(state);
     let workspaceDir = dialogState.workspaceDir;
-    let workspaceName = dialogState.workspaceName;
+    let currentWorkspaceName = dialogState.workspaceName;
+    let selectedWorkspaceName = '';
     if (isOpen) {
         if (!selectors.isScratchWorkspaceSelector(state)) {
             workspaceDir = workspaceDir || selectors.workspaceDirSelector(state);
-            workspaceName = workspaceName || selectors.workspaceNameSelector(state);
+            currentWorkspaceName = currentWorkspaceName || selectors.workspaceNameSelector(state);
         }
         workspaceDir = workspaceDir || selectors.lastWorkspaceDirSelector(state);
     }
     workspaceDir = isLocalWebAPI ? workspaceDir || '' : null;
-    workspaceName = workspaceName || '';
+    currentWorkspaceName = currentWorkspaceName || '';
     let workspaceNames: string[];
     if (state.data.workspace && state.data.workspaceNames) {
-        let workspaceBaseDir = state.data.workspace.baseDir;
-        let lastIndexOf = workspaceBaseDir.lastIndexOf('\\');
-        if (lastIndexOf < 0) {
-            lastIndexOf = workspaceBaseDir.lastIndexOf('/');
-        }
-        let name = workspaceBaseDir.substr(lastIndexOf + 1);
         workspaceNames = [...state.data.workspaceNames];
-        let indexOf = workspaceNames.indexOf(name);
+        let indexOf = workspaceNames.indexOf(currentWorkspaceName);
         if (indexOf > -1) {
             workspaceNames.splice(indexOf, 1);
         }
     }
     return {
         workspaceDir,
-        workspaceName,
+        currentWorkspaceName,
+        selectedWorkspaceName,
         dialogId,
         isOpen,
         isLocalWebAPI,
@@ -71,7 +68,7 @@ class ChooseWorkspaceDialog extends React.Component<IChooseWorkspaceDialogProps 
 
     constructor(props: IChooseWorkspaceDialogProps & DispatchProp<State>) {
         super(props);
-        this.state = {workspaceDir: '', workspaceName: '', deleteEntireWorkspace: true};
+        this.state = {workspaceDir: '', currentWorkspaceName: '', selectedWorkspaceName: '', deleteEntireWorkspace: true};
         this.onCancel = this.onCancel.bind(this);
         this.onConfirm = this.onConfirm.bind(this);
         this.canConfirm = this.canConfirm.bind(this);
@@ -81,23 +78,24 @@ class ChooseWorkspaceDialog extends React.Component<IChooseWorkspaceDialogProps 
     }
 
     componentWillReceiveProps(nextProps: IChooseWorkspaceDialogProps) {
-        this.setState({workspaceDir: nextProps.workspaceDir, workspaceName: nextProps.workspaceName});
+        this.setState({workspaceDir: nextProps.workspaceDir, currentWorkspaceName: nextProps.currentWorkspaceName});
     }
 
     private onCancel() {
         this.props.dispatch(actions.hideDialog(this.props.dialogId));
+        this.resetSelectedWorkspaceName();
     }
 
     private canConfirm(): boolean {
-        if (!this.state.workspaceName) {
+        if (this.state.selectedWorkspaceName === "undefined" || !this.state.selectedWorkspaceName) {
             return false;
         }
-        return /^([A-Za-z_\-\s0-9.]+)$/.test(this.state.workspaceName);
+        return /^([A-Za-z_\-\s0-9.]+)$/.test(this.state.selectedWorkspaceName);
     }
 
     private composeWorkspacePath(): string {
         let workspaceDir = this.state.workspaceDir;
-        let workspaceName = this.state.workspaceName;
+        let workspaceName = this.state.selectedWorkspaceName;
         if (workspaceDir === null) {
             return workspaceName;
         }
@@ -111,10 +109,15 @@ class ChooseWorkspaceDialog extends React.Component<IChooseWorkspaceDialogProps 
         } else {
             this.props.dispatch(actions.openWorkspace(this.composeWorkspacePath()));
         }
+        this.resetSelectedWorkspaceName();
+    }
+
+    private resetSelectedWorkspaceName() {
+        this.setState({selectedWorkspaceName: ''});
     }
 
     private setSelectedWorkspace(workspaceName: string) {
-        this.setState({workspaceName});
+        this.setState({selectedWorkspaceName: workspaceName});
     }
 
     private handleCheckboxChange(event) {
@@ -126,7 +129,7 @@ class ChooseWorkspaceDialog extends React.Component<IChooseWorkspaceDialogProps 
     }
 
     private onWorkspaceNameChange(ev: any) {
-        this.setState({workspaceName: ev.target.value} as IChooseWorkspaceDialogState);
+        this.setState({currentWorkspaceName: ev.target.value} as IChooseWorkspaceDialogState);
     }
 
     render() {
@@ -173,19 +176,13 @@ class ChooseWorkspaceDialog extends React.Component<IChooseWorkspaceDialogProps 
         let checkbox: any;
         if (this.props.dialogId === DELETE_WORKSPACE_DIALOG_ID) {
             checkbox =
-                // <div>
-                //     <label>
                 <Checkbox label={'Delete entire workspace'}
                           checked={this.state.deleteEntireWorkspace}
                           onChange={this.handleCheckboxChange.bind(this)}
                 />
-            // Delete entire workspace
-            // </label>
-            // </div>
         } else {
             checkbox = ''
         }
-
 
         return (
             <div>
@@ -194,7 +191,7 @@ class ChooseWorkspaceDialog extends React.Component<IChooseWorkspaceDialogProps 
                          selectionMode={ListBoxSelectionMode.SINGLE}
                          getItemKey={(item: any, itemIndex: number) => item}
                          onSelection={newSelection => this.setSelectedWorkspace('' + newSelection[0])}
-                         selection={this.state.workspaceName}
+                         selection={this.state.selectedWorkspaceName}
                 />
                 {checkbox}
             </div>
